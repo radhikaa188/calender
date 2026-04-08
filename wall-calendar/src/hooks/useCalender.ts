@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react'
-import { addMonths, subMonths, isBefore, isSameDay, format } from '../utils/dateUtils'
+import { addMonths, subMonths, isBefore, isSameDay } from '../utils/dateUtils'
 import type { DateRange, Note } from '../utils/types'
 import { useLocalStorage } from './useLocalStorage'
 import { v4 as uuid } from '../utils/uuid'

@@ -1,4 +1,3 @@
-import React from 'react'
 import type { DateRange } from '../../utils/types'
 import { formatDisplay } from '../../utils/dateUtils'
 

@@ -1,4 +1,3 @@
-import React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { buildCalendarGrid } from '../../utils/dateUtils'
 import type { DateRange, Note } from '../../utils/types'

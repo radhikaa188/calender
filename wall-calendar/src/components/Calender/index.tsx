@@ -1,5 +1,4 @@
-import React from 'react'
-import { motion } from 'framer-motion'
+import {motion} from 'framer-motion'
 import { useCalendar } from '../../hooks/useCalender'
 import { getTheme } from '../../utils/themes'
 import SpiralBinding from './SpringBinding'

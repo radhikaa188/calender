@@ -1,4 +1,3 @@
-import React from 'react'
 import WallCalendar from './components/Calender/index'
 
 export default function App() {
