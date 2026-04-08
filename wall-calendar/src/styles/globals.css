@@ -1,0 +1,162 @@
+@import "tailwindcss";
+
+@layer base {
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+ 
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #f0f2f5;
+    min-height: 100vh;
+  }
+}
+ 
+@layer components {
+  /* ── Spiral binding ── */
+  .spiral-binding {
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+    padding: 0 32px;
+    position: relative;
+    z-index: 10;
+  }
+ 
+  .spiral-ring {
+    width: 18px;
+    height: 22px;
+    border: 3px solid #9ca3af;
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    background: linear-gradient(135deg, #e5e7eb 0%, #9ca3af 50%, #6b7280 100%);
+    box-shadow: inset 0 1px 2px rgba(255,255,255,0.4), 0 2px 4px rgba(0,0,0,0.3);
+    position: relative;
+  }
+ 
+  .spiral-ring::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 3px;
+    height: 6px;
+    background: #9ca3af;
+    border-radius: 0 0 2px 2px;
+  }
+ 
+  /* ── Calendar paper shadow ── */
+  .calendar-paper {
+    box-shadow:
+      0 24px 64px rgba(0, 0, 0, 0.14),
+      0 8px 24px rgba(0, 0, 0, 0.08),
+      0 2px 6px rgba(0, 0, 0, 0.06);
+  }
+ 
+  /* ── Day cell hover ── */
+  .day-cell {
+    @apply relative flex flex-col items-center justify-start pt-1 cursor-pointer select-none transition-all duration-150;
+    min-height: 36px;
+  }
+ 
+  .day-cell:hover .day-number:not(.selected-start):not(.selected-end) {
+    @apply bg-blue-100 text-blue-700;
+  }
+ 
+  /* ── Range in-between ── */
+  .in-range-bg {
+    background: linear-gradient(90deg, #dbeafe 0%, #bfdbfe 100%);
+  }
+ 
+  .range-start-cap {
+    border-radius: 50% 0 0 50%;
+    background: linear-gradient(90deg, transparent 0%, #dbeafe 100%);
+  }
+ 
+  .range-end-cap {
+    border-radius: 0 50% 50% 0;
+    background: linear-gradient(90deg, #dbeafe 0%, transparent 100%);
+  }
+ 
+  /* ── Notes lines ── */
+  .note-line {
+    border-bottom: 1px solid #e2e8f0;
+    height: 28px;
+    width: 100%;
+  }
+ 
+  /* ── Tooltip ── */
+  .tooltip {
+    @apply absolute z-50 px-2 py-1 text-xs font-mono rounded shadow-lg pointer-events-none whitespace-nowrap;
+    background: #1e293b;
+    color: #f8fafc;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+  }
+ 
+  .tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 4px solid transparent;
+    border-top-color: #1e293b;
+  }
+}
+ 
+@layer utilities {
+  .text-shadow-sm {
+    text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  }
+ 
+  .clip-wave {
+    clip-path: polygon(0 0, 100% 0, 100% 75%, 60% 100%, 40% 80%, 0 100%);
+  }
+ 
+  /* Smooth page flip perspective */
+  .perspective {
+    perspective: 1200px;
+  }
+ 
+  .backface-hidden {
+    backface-visibility: hidden;
+  }
+}
+ 
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+ 
+/* ── Textarea reset ── */
+textarea {
+  resize: none;
+  outline: none;
+  font-family: 'DM Mono', monospace;
+}
+ 
+/* ── Transition for month flip ── */
+.month-enter {
+  opacity: 0;
+  transform: translateX(40px);
+}
+.month-enter-active {
+  opacity: 1;
+  transform: translateX(0);
+  transition: opacity 300ms ease, transform 300ms ease;
+}
+.month-exit {
+  opacity: 1;
+  transform: translateX(0);
+}
+.month-exit-active {
+  opacity: 0;
+  transform: translateX(-40px);
+  transition: opacity 300ms ease, transform 300ms ease;
+}
+ 
