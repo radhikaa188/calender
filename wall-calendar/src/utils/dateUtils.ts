@@ -20,11 +20,9 @@ import {
   startOfMonth,
   endOfMonth,
   eachDayOfInterval,
-  getDay,
   isSameDay,
   isWithinInterval,
   isBefore,
-  isAfter,
 } from 'date-fns'
 
 /** Build a Monday-first calendar grid for a given month. Cells without a date are null. */
