@@ -19,10 +19,16 @@ export interface MonthTheme {
   imageAlt: string
   accentColor: string    // Tailwind-compatible hex
   accentLight: string
+  accentDark: string
   label: string
+  season: 'winter' | 'spring' | 'summer' | 'autumn'
+  gradient:string
 }
 
 export interface Holiday {
   date: string           // MM-DD
   name: string
+  emoji: string
 }
+
+export type AppTheme = 'light' | 'dark'

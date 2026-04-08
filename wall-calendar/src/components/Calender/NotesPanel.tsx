@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import type { Note, NoteColor, DateRange } from '../../utils/types'
 import { toDateKey, formatDisplay } from '../../utils/dateUtils'
@@ -6,10 +6,7 @@ import NoteCard from './NoteCard'
 
 const COLORS: NoteColor[] = ['yellow', 'blue', 'green', 'pink']
 const COLOR_HEX: Record<NoteColor, string> = {
-  yellow: '#ca8a04',
-  blue:   '#2563eb',
-  green:  '#16a34a',
-  pink:   '#a21caf',
+  yellow: '#ca8a04', blue: '#2563eb', green: '#16a34a', pink: '#a21caf',
 }
 
 interface Props {
@@ -17,13 +14,14 @@ interface Props {
   range: DateRange
   accent: string
   accentLight: string
+  isDark: boolean
   onAdd: (note: Omit<Note, 'id' | 'createdAt'>) => void
   onUpdate: (id: string, content: string) => void
   onDelete: (id: string) => void
 }
 
 export default function NotesPanel({
-  notes, range, accent, accentLight, onAdd, onUpdate, onDelete,
+  notes, range, accent, accentLight, isDark, onAdd, onUpdate, onDelete,
 }: Props) {
   const [text, setText]   = useState('')
   const [color, setColor] = useState<NoteColor>('yellow')
@@ -37,11 +35,11 @@ export default function NotesPanel({
     setText('')
   }
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) handleAdd()
-  }
-
   const LINE_COUNT = 5
+  const borderColor    = isDark ? 'rgba(255,255,255,0.1)' : '#e5e7eb'
+  const bgColor        = isDark ? 'rgba(255,255,255,0.04)' : '#fafaf9'
+  const textareaColor  = isDark ? 'rgba(255,255,255,0.85)' : '#374151'
+  const labelColor     = isDark ? 'rgba(255,255,255,0.4)' : '#9ca3af'
 
   return (
     <div className="flex flex-col h-full">
@@ -52,102 +50,71 @@ export default function NotesPanel({
             <rect x="2" y="1" width="12" height="14" rx="2" stroke="currentColor" strokeWidth="1.3"/>
             <path d="M5 5h6M5 8h6M5 11h4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
           </svg>
-          <h3 style={{
-            fontFamily: 'Playfair Display, serif',
-            fontWeight: 600,
-            color: '#374151',
-            fontSize: '1rem'
-          }}>
+          <h3 style={{ fontFamily: 'Playfair Display, serif', fontWeight: 600, color: isDark ? 'rgba(255,255,255,0.9)' : '#374151', fontSize: '1rem' }}>
             Notes
           </h3>
         </div>
-
-        <span
+        <motion.span
+          key={displayDate}
+          initial={{ opacity: 0, y: -4 }}
+          animate={{ opacity: 1, y: 0 }}
           className="text-xs font-mono px-2 py-0.5 rounded-full"
-          style={{
-            background: accentLight,
-            color: accent,
-            boxShadow: `0 1px 4px ${accent}22`
-          }}
+          style={{ background: isDark ? `${accent}33` : accentLight, color: accent }}
         >
           {displayDate}
-        </span>
+        </motion.span>
       </div>
 
-      {/* Textarea */}
-      <div
-        className="relative rounded-xl mb-3 overflow-hidden flex-shrink-0"
-        style={{
-          background: '#fafaf9',
-          border: '1px solid #e5e7eb',
-          boxShadow: '0 2px 6px rgba(0,0,0,0.04)'
-        }}
+      {/* Ruled textarea */}
+      <div className="relative rounded-lg mb-3 overflow-hidden flex-shrink-0"
+        style={{ background: bgColor, border: `1px solid ${borderColor}` }}
       >
-        {/* Red margin */}
-        <div
-          className="absolute top-0 bottom-0"
-          style={{ left: 28, width: 1, background: '#fca5a5', opacity: 0.6 }}
-        />
-
-        {/* Lines */}
+        <div className="absolute top-0 bottom-0" style={{ left: 28, width: 1, background: '#fca5a5', opacity: 0.6, zIndex: 1 }} />
         <div className="absolute inset-0 pointer-events-none">
           {Array.from({ length: LINE_COUNT }).map((_, i) => (
-            <div key={i} style={{ height: 32, borderBottom: '1px solid #e5e7eb' }} />
+            <div key={i} style={{ height: 32, borderBottom: `1px solid ${borderColor}` }} />
           ))}
         </div>
-
         <textarea
           value={text}
           onChange={e => setText(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder={`Write a note for ${displayDate}…`}
+          onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) handleAdd() }}
+          placeholder="Write a note…"
           rows={LINE_COUNT}
-          className="relative w-full bg-transparent py-1 pr-3 text-sm text-gray-700 placeholder:text-gray-300"
+          className="relative w-full bg-transparent py-1 pr-3 text-sm placeholder:text-gray-300"
           style={{
-            border: 'none',
-            resize: 'none',
-            outline: 'none',
-            lineHeight: '32px',
-            paddingLeft: 36,
+            border: 'none', resize: 'none', outline: 'none',
+            lineHeight: '32px', paddingLeft: 36,
             fontFamily: 'DM Mono, monospace',
+            color: textareaColor,
+            zIndex: 2,
           }}
         />
       </div>
 
-      {/* Controls */}
+      {/* Color + Add */}
       <div className="flex items-center justify-between mb-4 flex-shrink-0">
-        {/* Colors */}
         <div className="flex items-center gap-2">
-          <span className="text-xs text-gray-400 mr-1">Color:</span>
-
+          <span className="text-xs mr-1" style={{ fontFamily: 'DM Sans', color: labelColor }}>Color:</span>
           {COLORS.map(c => (
-            <button
-              key={c}
-              onClick={() => setColor(c)}
-              className="rounded-full transition-all duration-200"
+            <button key={c} onClick={() => setColor(c)}
+              className="rounded-full transition-all duration-150"
               style={{
-                width: 18,
-                height: 18,
+                width: 18, height: 18,
                 background: COLOR_HEX[c],
-                border: color === c ? '2.5px solid #374151' : '2px solid transparent',
+                border: color === c ? '2.5px solid ' + (isDark ? 'white' : '#374151') : '2px solid transparent',
                 transform: color === c ? 'scale(1.25)' : 'scale(1)',
-                boxShadow: color === c ? `0 0 0 3px ${COLOR_HEX[c]}22` : 'none',
               }}
+              aria-label={`${c} note`}
             />
           ))}
         </div>
-
-        {/* Add Button */}
         <motion.button
-          whileTap={{ scale: 0.92 }}
-          whileHover={{ scale: text.trim() ? 1.05 : 1 }}
+          whileTap={{ scale: 0.94 }}
           onClick={handleAdd}
           disabled={!text.trim()}
           className="px-4 py-1.5 rounded-lg text-xs font-semibold text-white transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-          style={{
-            background: accent,
-            boxShadow: text.trim() ? `0 4px 12px ${accent}44` : 'none',
-          }}
+          style={{ fontFamily: 'DM Sans', background: accent, boxShadow: text.trim() ? `0 2px 8px ${accent}44` : 'none' }}
         >
           + Add Note
         </motion.button>
@@ -156,45 +123,27 @@ export default function NotesPanel({
       {/* Count */}
       {notes.length > 0 && (
         <div className="mb-2 flex-shrink-0">
-          <span className="text-xs text-gray-400">
+          <span className="text-xs" style={{ fontFamily: 'DM Mono', color: labelColor }}>
             {notes.length} note{notes.length !== 1 ? 's' : ''} this month
           </span>
         </div>
       )}
 
-      {/* Notes */}
+      {/* List */}
       <div className="flex-1 overflow-y-auto space-y-2 pr-0.5">
         <AnimatePresence mode="popLayout">
           {notes.length === 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              className="flex flex-col items-center justify-center py-10 text-center"
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="flex flex-col items-center justify-center py-8 text-center"
             >
-              <div className="text-4xl mb-2">📝</div>
-              <p className="text-sm text-gray-400 italic">
-                No notes for this day
-              </p>
-              <p className="text-xs text-gray-300 italic">
-                Try adding one above 👆
+              <div className="text-3xl mb-2">📝</div>
+              <p className="text-xs italic" style={{ fontFamily: 'DM Mono', color: labelColor }}>
+                No notes yet. Select a day and add one!
               </p>
             </motion.div>
           )}
-
           {[...notes].reverse().map(note => (
-            <motion.div
-              key={note.id}
-              initial={{ opacity: 0, y: 6 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-            >
-              <NoteCard
-                note={note}
-                onUpdate={onUpdate}
-                onDelete={onDelete}
-              />
-            </motion.div>
+            <NoteCard key={note.id} note={note} isDark={isDark} onUpdate={onUpdate} onDelete={onDelete} />
           ))}
         </AnimatePresence>
       </div>
